@@ -15,15 +15,19 @@ inputs = [
 elevators = ["3 4","4 3","7 4","1 17","8 9","4 9","2 3","0 3","5 4","7 17","1 4","3 17","2 9","6 9","5 17","0 9","6 3"]
 
 
-def test_solution():
-    iit = iter(inputs + elevators)
-    solution.input = lambda: next(iit)
-    class st:
-        _o = ''
-    def p(o):
-        print(o)
-        st._o = o
-    solution.run()
+def test_neighboors():
+    pass
+
+
+#def test_solution():
+#    iit = iter(inputs + elevators)
+#    solution.input = lambda: next(iit)
+#    class st:
+#        _o = ''
+#    def p(o):
+#        print(o)
+#        st._o = o
+#    solution.run()
 
 if __name__ == "__main__":
     test_solution()
