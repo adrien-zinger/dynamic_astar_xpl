@@ -1,18 +1,24 @@
 from math import sqrt
 
+# Tools
+def equals(a, b): return a.x == b.x and a.y == b.y
+def sort(li): return li if len(li) == 1 else sorted(li, key=lambda n: n.dist)
+def distance(a, b): return sqrt((b.x - a.x)**2 + (b.y - a.y)**2) if a.dist is None else a.dist
+def contains(li, n):
+    for u in li:
+        if equals(u, n): return u
+    return None
+def is_valid(cost): return cost.tt_clones <= Game.nb_total_clones and cost.tt_rounds <= Game.nb_additional_elevators and cost.tt_rounds <= Game.nb_rounds
+
 class Cost():
     def __init__(tt_clones, tt_rounds, tt_elevators):
         self.tt_clones = tt_clones
         self.tt_rounds = tt_rounds
         self.tt_elevators = tt_elevators
-    def add(cost):
+    def add(self, cost):
         self.tt_clones += cost.tt_clones
         self.tt_rounds += cost.tt_rounds
         self.tt_elevators += cost.tt_elevators
-    def is_valid():
-        return self.tt_clones <= Game.nb_total_clones
-            and self.tt_rounds <= Game.nb_additional_elevators
-            and self.tt_rounds <= Game.nb_rounds
 
 class Node():
     def __init__(self, x, y, direction, cost):
@@ -35,39 +41,33 @@ def has_elevator(n):
             return True
     return False
 
-def equals(a, b): return a.x == b.x and a.y == b.y
-def sort(li): return li if len(li) == 1 else sorted(li, key=lambda n: n.dist)
-def distance(a, b): return sqrt((b.x - a.x)**2 + (b.y - a.y)**2) if a.dist is None else a.dist
-def contains(li, n):
-    for u in li:
-        if equals(u, n): return u
-    return None
-
 def neighboors(u):
     ret = []
     if u.direction is "LEFT" and (u.y - 1) >= 0:
         cost = Cost(0,1,0).add(u.cost)
-        if cost.is_valid():
+        if is_valid(cost):
             ret.append(Node(u.x, u.y - 1, "LEFT", cost))
     if u.direction is "RIGHT" and (u.y + 1) < width:
         cost = Cost(0,1,0).add(u.cost)
-        if cost.is_valid():
+        if is_valid(cost):
             ret.append(Node(u.x, u.y + 1, , "RIGHT", cost))
     # Build elevator
     if has_elevator(u):
         cost = Cost(0,1,0).add(u.cost)
-        if cost.is_valid():
+        if is_valid(cost):
             ret.append(Node(u.x + 1, u.y, cost))
     elif Game.nb_floor > u.x:
         cost = Cost(1, 3, 1).add(u.cost)
-        if cost.is_valid():
+        if is_valid(cost):
             ret.append(Node(u.x + 1, u.y, cost))
     # Block
     cost = Cost(1,3,0).add(u.cost)
-    if cost.is_valid():
+    if is_valid(cost):
         ret.append(Node(u.x, u.y + 1, , ("RIGHT", "LEFT")[u.direction is "RIGHT"), cost))
     return ret
 
+
+# Astar implementation
 def astar(begin, target):
     cl = []
     op = [begin]
@@ -99,7 +99,3 @@ def run():
     elevators = [map(int, input().split()) for _ in range(nb_elevators)]
     clone_floor, clone_pos, Game.direction = input().split()
     path = astar(Node(*map(int, [clone_floor, clone_pos])), Node(exit_floor, exit_pos))
-
-
-if __name__ == "__main__":
-    print(astar(Node(1, 1), Node(5, 5)).path)
